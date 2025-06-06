@@ -18,7 +18,7 @@ module.exports = {
         white: "#FFFFFF",
       },
       fontFamily: {
-        heading: ["Jakusty", "sans-serif"],
+        heading: ["Jakusty", "Open Sans", "sans-serif"], // Jakusty for headings, fallback to Open Sans
         body: ["Open Sans", "sans-serif"],
       },
     },
