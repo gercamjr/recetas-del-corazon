@@ -1,0 +1,11 @@
+{
+  "HomePage": {
+    "title": "¡Bienvenido a Recetas del Corazón!",
+    "greeting": "¡Hola, mundo!"
+  },
+  "Navigation": {
+    "home": "Inicio",
+    "recipes": "Recetas",
+    "about": "Acerca de"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "HomePage": {
+    "title": "Welcome to Recipes from the Heart!",
+    "greeting": "Hello, world!"
+  },
+  "Navigation": {
+    "home": "Home",
+    "recipes": "Recipes",
+    "about": "About"
+  }
+}

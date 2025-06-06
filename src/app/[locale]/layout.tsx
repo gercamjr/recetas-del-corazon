@@ -1,29 +1,58 @@
 import type { Metadata } from "next";
-import "../globals.css";
-import "@fontsource/open-sans/400.css";
-import "@fontsource/open-sans/700.css";
-// TODO: Import Jakusty font here when available (local or CDN)
+import { Geist, Geist_Mono } from "next/font/google";
+import "../globals.css"; // Corrected path to globals.css
+import {NextIntlClientProvider, hasLocale} from 'next-intl';
+import {notFound} from 'next/navigation';
+import {routing} from '@/i18n/routing';
+import {setRequestLocale} from 'next-intl/server';
 
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
 
 export const metadata: Metadata = {
   title: "Recetas del Corazón",
-  description: "Family recipes app",
+  description: "A family recipe sharing app",
 };
 
-export default function RootLayout({
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({locale}));
+}
+
+export default async function LocaleLayout({
   children,
-}: Readonly<{ children: React.ReactNode }>) {
+  params: {locale}
+}: {
+  children: React.ReactNode;
+  params: {locale: string};
+}) {
+  // Validate that the incoming `locale` parameter is valid
+  if (!hasLocale(routing.locales, locale)) {
+    notFound();
+  }
+
+  // Enable static rendering
+  setRequestLocale(locale);
+
+  let messages;
+  try {
+    messages = (await import(`../../../messages/${locale}.json`)).default;
+  } catch (error) {
+    notFound();
+  }
+
   return (
-    <html lang="en">
-      <body className="font-body bg-white text-smoky-black dark:bg-smoky-black dark:text-white antialiased flex flex-col min-h-screen">
-        {/* Heading elements should use font-heading via Tailwind */}
-        <Header />
-        <main className="flex-1 w-full max-w-4xl mx-auto p-4">
+    <html lang={locale} className="dark">
+      <body className={`${geistSans.variable} ${geistMono.variable} bg-smoky-black text-neutral-200`}>
+        <NextIntlClientProvider locale={locale} messages={messages}>
           {children}
-        </main>
-        <Footer />
+        </NextIntlClientProvider>
       </body>
     </html>
   );

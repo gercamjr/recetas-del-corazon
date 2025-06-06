@@ -5,6 +5,7 @@
     Avoid working on more than one file at a time.
     Multiple simultaneous edits to a file will cause corruption.
     Be chatty and teach about what you are doing while coding.
+    Fetch up to date documentation and code examples from the web as needed.
 
 ## LARGE FILE & COMPLEX CHANGE PROTOCOL
 
@@ -106,3 +107,12 @@
     - Use CSRF protection where applicable.
     - Limit privileges and enforce role-based access control.
     - Implement detailed internal logging and monitoring.
+
+## TypeScript Requirements
+
+    - Use TypeScript for all JavaScript code.
+    - Define strict types for all variables, function parameters, and return values.
+    - Use interfaces and types to define complex data structures.
+    - Enable strict mode in TypeScript configuration.
+    - Use `unknown` type for untyped data sources.
+    - Avoid using `any` type unless absolutely necessary.
