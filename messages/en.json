@@ -6,6 +6,60 @@
   "Navigation": {
     "home": "Home",
     "recipes": "Recipes",
-    "about": "About"
+    "about": "About",
+    "addRecipe": "Add Recipe",
+    "allRightsReserved": "All rights reserved"
+  },
+  "RecipesPage": {
+    "allRecipes": "All Recipes",
+    "viewRecipe": "View Recipe",
+    "prep": "Prep",
+    "cook": "Cook",
+    "timeNotSpecified": "Time not specified",
+    "noRecipes": "No recipes found yet. How about adding one?",
+    "prepTime": "Prep Time",
+    "cookTime": "Cook Time",
+    "servings": "Servings",
+    "ingredients": "Ingredients",
+    "instructions": "Instructions",
+    "tags": "Tags",
+    "notes": "Notes",
+    "author": "Author",
+    "lastUpdated": "Last Updated"
+  },
+  "AddRecipePage": {
+    "pageTitle": "Add a New Recipe",
+    "titleLabel": "Recipe Title",
+    "titlePlaceholder": "e.g., Grandma\\'s Apple Pie",
+    "descriptionLabel": "Description",
+    "descriptionPlaceholder": "A short summary of your delicious recipe...",
+    "ingredientsLabel": "Ingredients",
+    "ingredientNamePlaceholder": "Ingredient Name (e.g., Flour)",
+    "ingredientQuantityPlaceholder": "Qty (e.g., 2)",
+    "ingredientUnitPlaceholder": "Unit (e.g., cups)",
+    "addIngredientButton": "Add Ingredient",
+    "removeIngredientButton": "Remove",
+    "instructionsLabel": "Instructions",
+    "instructionPlaceholder": "Step-by-step guide...",
+    "addInstructionButton": "Add Instruction Step",
+    "removeInstructionButton": "Remove",
+    "imagesLabel": "Recipe Images",
+    "prepTimeLabel": "Preparation Time",
+    "prepTimePlaceholder": "e.g., 30 mins",
+    "cookTimeLabel": "Cooking Time",
+    "cookTimePlaceholder": "e.g., 1 hour",
+    "servingsLabel": "Servings",
+    "servingsPlaceholder": "e.g., 4",
+    "tagsLabel": "Tags (comma-separated)",
+    "tagsPlaceholder": "e.g., dessert, baking, family favorite",
+    "languageLabel": "Recipe Language",
+    "notesLabel": "Additional Notes (optional)",
+    "notesPlaceholder": "Any extra tips, variations, or story behind the recipe...",
+    "submitButton": "Add Recipe",
+    "successMessage": "Recipe submitted successfully (logged to console)!"
+  },
+  "Forms": {
+    "errorMessage": "Please fill out all required fields.",
+    "fieldRequired": "This field is required."
   }
 }

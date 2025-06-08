@@ -2,12 +2,77 @@ import Image from "next/image";
 import {useTranslations} from 'next-intl';
 import {Link} from '@/i18n/navigation';
 import {setRequestLocale} from 'next-intl/server';
-import {routing} from '@/i18n/routing'; // Import routing to use in generateStaticParams
+import {routing} from '@/i18n/routing';
+import type { Recipe } from "@/types/recipe"; // Added import for Recipe type
 
 // Enable static rendering for this page
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({locale}));
 }
+
+// Mock Recipe Data (Temporary)
+const mockRecipes: Recipe[] = [
+  {
+    _id: '1',
+    title: 'Spaghetti Carbonara',
+    description: 'A classic Italian pasta dish.',
+    ingredients: [
+      { name: 'Spaghetti', quantity: '200', unit: 'g' },
+      { name: 'Guanciale', quantity: '100', unit: 'g' },
+      { name: 'Eggs', quantity: '2' },
+      { name: 'Pecorino Romano', quantity: '50', unit: 'g' },
+      { name: 'Black Pepper', quantity: 'to taste' },
+    ],
+    instructions: [
+      'Cook spaghetti according to package directions.',
+      'While pasta cooks, fry guanciale until crispy.',
+      'Whisk eggs and Pecorino Romano in a bowl.',
+      'Drain pasta, reserving some pasta water.',
+      'Combine pasta with guanciale. Then, quickly mix in egg mixture. Add pasta water if needed to create a creamy sauce.',
+      'Serve immediately with a generous sprinkle of black pepper and more Pecorino.'
+    ],
+    imageUrls: ['/mock-images/carbonara1.jpg', '/mock-images/carbonara2.jpg'], // Placeholder image URLs
+    tags: ['pasta', 'italian', 'classic'],
+    prepTime: '10 mins',
+    cookTime: '15 mins',
+    servings: 2,
+    authorId: 'family-member-1',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    language: 'en',
+  },
+  {
+    _id: '2',
+    title: 'Chicken Tikka Masala',
+    description: 'Creamy and flavorful Indian curry.',
+    ingredients: [
+      { name: 'Chicken Breast', quantity: '500', unit: 'g' },
+      { name: 'Yogurt', quantity: '1', unit: 'cup' },
+      { name: 'Tikka Masala Paste', quantity: '2', unit: 'tbsp' },
+      { name: 'Onion', quantity: '1' },
+      { name: 'Tomato Puree', quantity: '400', unit: 'g' },
+      { name: 'Heavy Cream', quantity: '1/2', unit: 'cup' },
+      { name: 'Cilantro', quantity: 'for garnish' },
+    ],
+    instructions: [
+      'Marinate chicken in yogurt and tikka masala paste for at least 1 hour.',
+      'Sauté onion in a large pan until softened.',
+      'Add chicken and cook until browned.',
+      'Stir in tomato puree and simmer for 15 minutes.',
+      'Add heavy cream and cook for another 5 minutes.',
+      'Garnish with cilantro and serve with rice or naan.'
+    ],
+    imageUrls: ['/mock-images/tikka-masala.jpg'], // Placeholder image URL
+    tags: ['indian', 'curry', 'chicken'],
+    prepTime: '20 mins (plus marination)',
+    cookTime: '30 mins',
+    servings: 4,
+    authorId: 'family-member-2',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    language: 'en',
+  },
+];
 
 export default function Home({params: {locale}}: {params: {locale: string}}) {
   // Enable static rendering
@@ -15,114 +80,63 @@ export default function Home({params: {locale}}: {params: {locale: string}}) {
 
   const t = useTranslations('HomePage');
   const tNav = useTranslations('Navigation');
+  const tRecipes = useTranslations('RecipesPage'); // Added for recipe-specific translations
 
   return (
-    <div className="grid grid-rows-[auto_1fr_auto] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
+    <div className="grid grid-rows-[auto_1fr_auto] items-start justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <header className="flex justify-between w-full items-center">
         <h1 className="text-2xl font-bold text-orangey-accent">{t('title')}</h1>
         <nav>
           <ul className="flex gap-4">
             <li><Link href="/" className="hover:text-orangey-accent transition-colors">{tNav('home')}</Link></li>
-            <li><Link href="/recipes" className="hover:text-orangey-accent transition-colors">{tNav('recipes')}</Link></li>
-            <li><Link href="/about" className="hover:text-orangey-accent transition-colors">{tNav('about')}</Link></li>
+            {/* We might want a dedicated recipes link later, but for now, home page lists them */}
+            {/* <li><Link href="/recipes" className="hover:text-orangey-accent transition-colors">{tNav('recipes')}</Link></li> */}
+            <li><Link href="/add-recipe" className="hover:text-orangey-accent transition-colors">{tNav('addRecipe')}</Link></li>
+            {/* Add other nav links like 'About' if needed */}
           </ul>
         </nav>
       </header>
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <p>{t('greeting')}</p>
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/[locale]/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-orangey-accent text-smoky-black gap-2 hover:bg-orangey-accent/80 font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
+      <main className="flex flex-col gap-8 w-full max-w-4xl">
+        <h2 className="text-3xl font-bold text-center sm:text-left">{tRecipes('allRecipes')}</h2>
+        
+        {/* Recipe List Section */}
+        {mockRecipes.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {mockRecipes.map((recipe) => (
+              <div key={recipe._id} className="bg-white dark:bg-neutral-800 shadow-lg rounded-lg overflow-hidden transition-transform hover:scale-105">
+                {recipe.imageUrls && recipe.imageUrls.length > 0 && (
+                  <Image 
+                    src={recipe.imageUrls[0]} // Display the first image as a preview
+                    alt={recipe.title} 
+                    width={400} 
+                    height={250} 
+                    className="w-full h-48 object-cover"
+                  />
+                )}
+                <div className="p-4">
+                  <h3 className="text-xl font-semibold mb-2 text-orangey-accent">{recipe.title}</h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-300 mb-3 truncate">{recipe.description}</p>
+                  <div className="flex justify-between items-center">
+                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                      {recipe.prepTime && recipe.cookTime ? `${tRecipes('prep')}: ${recipe.prepTime} | ${tRecipes('cook')}: ${recipe.cookTime}` : tRecipes('timeNotSpecified')}
+                    </span>
+                    <Link href={`/recipes/${recipe._id}`} className="text-sm text-blue-500 hover:underline">
+                      {tRecipes('viewRecipe')}
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-center text-gray-500 dark:text-gray-400">{tRecipes('noRecipes')}</p>
+        )}
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center mt-10">
+        <p className="text-sm text-gray-500 dark:text-gray-400">
+          &copy; {new Date().getFullYear()} {t('title')}. {tRecipes('allRightsReserved')}
+        </p>
+        {/* Add other footer links if needed */}
       </footer>
     </div>
   );

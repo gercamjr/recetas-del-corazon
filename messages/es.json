@@ -6,6 +6,60 @@
   "Navigation": {
     "home": "Inicio",
     "recipes": "Recetas",
-    "about": "Acerca de"
+    "about": "Acerca de",
+    "addRecipe": "Añadir Receta"
+  },
+  "RecipesPage": {
+    "allRecipes": "Todas las Recetas",
+    "viewRecipe": "Ver Receta",
+    "prep": "Prep",
+    "cook": "Cocción",
+    "timeNotSpecified": "Tiempo no especificado",
+    "noRecipes": "Aún no hay recetas. ¿Qué tal si añades una?",
+    "allRightsReserved": "Todos los derechos reservados",
+    "prepTime": "Tiempo de Prep",
+    "cookTime": "Tiempo de Cocción",
+    "servings": "Porciones",
+    "ingredients": "Ingredientes",
+    "instructions": "Instrucciones",
+    "tags": "Etiquetas",
+    "notes": "Notas",
+    "author": "Autor",
+    "lastUpdated": "Última Actualización"
+  },
+  "AddRecipePage": {
+    "pageTitle": "Añadir Nueva Receta",
+    "titleLabel": "Título de la Receta",
+    "titlePlaceholder": "ej., Tarta de Manzana de la Abuela",
+    "descriptionLabel": "Descripción",
+    "descriptionPlaceholder": "Un breve resumen de tu deliciosa receta...",
+    "ingredientsLabel": "Ingredientes",
+    "ingredientNamePlaceholder": "Nombre del Ingrediente (ej., Harina)",
+    "ingredientQuantityPlaceholder": "Cant. (ej., 2)",
+    "ingredientUnitPlaceholder": "Unidad (ej., tazas)",
+    "addIngredientButton": "Añadir Ingrediente",
+    "removeIngredientButton": "Eliminar",
+    "instructionsLabel": "Instrucciones",
+    "instructionPlaceholder": "Guía paso a paso...",
+    "addInstructionButton": "Añadir Paso de Instrucción",
+    "removeInstructionButton": "Eliminar",
+    "imagesLabel": "Imágenes de la Receta",
+    "prepTimeLabel": "Tiempo de Preparación",
+    "prepTimePlaceholder": "ej., 30 min",
+    "cookTimeLabel": "Tiempo de Cocción",
+    "cookTimePlaceholder": "ej., 1 hora",
+    "servingsLabel": "Porciones",
+    "servingsPlaceholder": "ej., 4",
+    "tagsLabel": "Etiquetas (separadas por coma)",
+    "tagsPlaceholder": "ej., postre, horneado, favorito de la familia",
+    "languageLabel": "Idioma de la Receta",
+    "notesLabel": "Notas Adicionales (opcional)",
+    "notesPlaceholder": "Cualquier consejo extra, variaciones o historia detrás de la receta...",
+    "submitButton": "Añadir Receta",
+    "successMessage": "¡Receta enviada con éxito (registrada en la consola)!"
+  },
+  "Forms": {
+    "errorMessage": "Por favor, completa todos los campos obligatorios.",
+    "fieldRequired": "Este campo es obligatorio."
   }
 }

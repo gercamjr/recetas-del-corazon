@@ -1,1 +1,8 @@
 @import "tailwindcss";
+
+@theme {
+  --color-smoky-black: #18181B;
+  --color-orangey-accent: #F97316;
+  /* You can also use the deeper orange if you prefer: */
+  /* --color-orangey-accent-deep: #EA580C; */
+}

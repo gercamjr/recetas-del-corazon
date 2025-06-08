@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import "../globals.css"; // Corrected path to globals.css
+import "../globals.css"; // Corrected path
 import {NextIntlClientProvider, hasLocale} from 'next-intl';
 import {notFound} from 'next/navigation';
 import {routing} from '@/i18n/routing';
@@ -32,18 +32,22 @@ export default async function LocaleLayout({
   children: React.ReactNode;
   params: {locale: string};
 }) {
-  // Validate that the incoming `locale` parameter is valid
-  if (!hasLocale(routing.locales, locale)) {
+  if (!hasLocale(routing.locales, locale as any)) {
     notFound();
   }
 
-  // Enable static rendering
   setRequestLocale(locale);
 
   let messages;
   try {
     messages = (await import(`../../../messages/${locale}.json`)).default;
   } catch (error) {
+    console.error(`Error loading messages for locale '${locale}':`, error);
+    notFound();
+  }
+
+  if (!messages || typeof messages !== 'object' || messages === null) {
+    console.error(`Messages for locale '${locale}' are invalid, empty, or not an object.`);
     notFound();
   }
 
