@@ -6,71 +6,6 @@ import { useTranslations, useLocale } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import type { Recipe } from "@/types/recipe";
 
-// Mock Recipe Data (Temporary) - This would typically come from an API
-const mockRecipes: Recipe[] = [
-  {
-    _id: '1',
-    title: 'Spaghetti Carbonara',
-    description: 'A classic Italian pasta dish.',
-    ingredients: [
-      { name: 'Spaghetti', quantity: '200', unit: 'g' },
-      { name: 'Guanciale', quantity: '100', unit: 'g' },
-      { name: 'Eggs', quantity: '2' },
-      { name: 'Pecorino Romano', quantity: '50', unit: 'g' },
-      { name: 'Black Pepper', quantity: 'to taste' },
-    ],
-    instructions: [
-      'Cook spaghetti according to package directions.',
-      'While pasta cooks, fry guanciale until crispy.',
-      'Whisk eggs and Pecorino Romano in a bowl.',
-      'Drain pasta, reserving some pasta water.',
-      'Combine pasta with guanciale. Then, quickly mix in egg mixture. Add pasta water if needed to create a creamy sauce.',
-      'Serve immediately with a generous sprinkle of black pepper and more Pecorino.'
-    ],
-    imageUrls: ['https://picsum.photos/200/400', 'https://picsum.photos/200/400'],
-    tags: ['pasta', 'italian', 'classic'],
-    prepTime: '10 mins',
-    cookTime: '15 mins',
-    servings: 2,
-    authorId: 'family-member-1',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    language: 'en',
-  },
-  {
-    _id: '2',
-    title: 'Chicken Tikka Masala',
-    description: 'Creamy and flavorful Indian curry.',
-    ingredients: [
-      { name: 'Chicken Breast', quantity: '500', unit: 'g' },
-      { name: 'Yogurt', quantity: '1', unit: 'cup' },
-      { name: 'Tikka Masala Paste', quantity: '2', unit: 'tbsp' },
-      { name: 'Onion', quantity: '1' },
-      { name: 'Tomato Puree', quantity: '400', unit: 'g' },
-      { name: 'Heavy Cream', quantity: '1/2', unit: 'cup' },
-      { name: 'Cilantro', quantity: 'for garnish' },
-    ],
-    instructions: [
-      'Marinate chicken in yogurt and tikka masala paste for at least 1 hour.',
-      'Sauté onion in a large pan until softened.',
-      'Add chicken and cook until browned.',
-      'Stir in tomato puree and simmer for 15 minutes.',
-      'Add heavy cream and cook for another 5 minutes.',
-      'Garnish with cilantro and serve with rice or naan.'
-    ],
-    imageUrls: ['https://picsum.photos/seed/picsum/200/400'],
-    tags: ['indian', 'curry', 'chicken'],
-    prepTime: '20 mins (plus marination)',
-    cookTime: '30 mins',
-    servings: 4,
-    authorId: 'family-member-2',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    language: 'en',
-  },
-  // Add more mock recipes if desired
-];
-
 const DEBOUNCE_DELAY = 300; // milliseconds
 
 export default function Home() {
@@ -80,9 +15,46 @@ export default function Home() {
   const tNav = useTranslations('Navigation');
   const tRecipes = useTranslations('RecipesPage');
 
+  // State for API data
+  const [allRecipes, setAllRecipes] = useState<Recipe[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // State for search and filtering
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
-  const [filteredRecipes, setFilteredRecipes] = useState<Recipe[]>(mockRecipes);
+  const [filteredRecipes, setFilteredRecipes] = useState<Recipe[]>([]);
+
+  // Effect to fetch recipes from the API when the component mounts
+  useEffect(() => {
+    const fetchRecipes = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        const response = await fetch('/api/recipes');
+        if (!response.ok) {
+          // Try to get a more detailed error from the response body
+          const errorData = await response.json().catch(() => null); // Avoid further errors if body is not JSON
+          throw new Error(errorData?.error || 'Failed to fetch recipes');
+        }
+        const data = await response.json();
+        if (data.success) {
+          setAllRecipes(data.data);
+          setFilteredRecipes(data.data); // Initially, filtered list is the full list
+        } else {
+          throw new Error(data.error || 'An unknown API error occurred');
+        }
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred.';
+        setError(errorMessage);
+        console.error("Fetch error:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchRecipes();
+  }, []); // Empty dependency array ensures this runs only once on mount
 
   // Effect to update debouncedSearchTerm after user stops typing
   useEffect(() => {
@@ -90,19 +62,19 @@ export default function Home() {
       setDebouncedSearchTerm(searchTerm);
     }, DEBOUNCE_DELAY);
 
-    // Cleanup function to clear the timeout if searchTerm changes before delay
+    // Cleanup function to clear the timeout if searchTerm changes
     return () => {
       clearTimeout(handler);
     };
-  }, [searchTerm]); // Only re-call effect if searchTerm changes
+  }, [searchTerm]);
 
-  // Effect to filter recipes based on debouncedSearchTerm
+  // Effect to filter recipes based on the debounced search term
   useEffect(() => {
     const lowercasedSearchTerm = debouncedSearchTerm.toLowerCase();
     if (lowercasedSearchTerm === '') {
-      setFilteredRecipes(mockRecipes);
+      setFilteredRecipes(allRecipes); // If search is empty, show all recipes
     } else {
-      const results = mockRecipes.filter(recipe => 
+      const results = allRecipes.filter(recipe => 
         recipe.title.toLowerCase().includes(lowercasedSearchTerm) ||
         recipe.description.toLowerCase().includes(lowercasedSearchTerm) ||
         (recipe.tags && recipe.tags.some(tag => tag.toLowerCase().includes(lowercasedSearchTerm))) ||
@@ -110,7 +82,56 @@ export default function Home() {
       );
       setFilteredRecipes(results);
     }
-  }, [debouncedSearchTerm]); // Only re-call effect if debouncedSearchTerm changes
+  }, [debouncedSearchTerm, allRecipes]); // Rerun when search term or the main recipe list changes
+
+  const renderRecipeList = () => {
+    if (isLoading) {
+      return <p className="text-center text-gray-500 dark:text-gray-400">Loading recipes...</p>;
+    }
+
+    if (error) {
+      return <p className="text-center text-red-500 dark:text-red-400">Error: {error}</p>;
+    }
+
+    if (filteredRecipes.length > 0) {
+      return (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredRecipes.map((recipe) => (
+            <div key={recipe._id} className="bg-white dark:bg-neutral-800 shadow-lg rounded-lg overflow-hidden transition-transform hover:scale-105">
+              {recipe.imageUrls && recipe.imageUrls.length > 0 && (
+                <Image 
+                  src={recipe.imageUrls[0]} // Display the first image as a preview
+                  alt={recipe.title} 
+                  width={400} 
+                  height={250} 
+                  className="w-full h-48 object-cover"
+                  priority={true} // Prioritize images in the viewport
+                />
+              )}
+              <div className="p-4">
+                <h3 className="text-xl font-semibold mb-2 text-orangey-accent">{recipe.title}</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-300 mb-3 truncate">{recipe.description}</p>
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-gray-500 dark:text-gray-400">
+                    {recipe.prepTime && recipe.cookTime ? `${tRecipes('prep')}: ${recipe.prepTime} | ${tRecipes('cook')}: ${recipe.cookTime}` : tRecipes('timeNotSpecified')}
+                  </span>
+                  <Link href={`/recipes/${recipe._id}`} className="text-sm text-blue-500 hover:underline">
+                    {tRecipes('viewRecipe')}
+                  </Link>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    return (
+      <p className="text-center text-gray-500 dark:text-gray-400">
+        {debouncedSearchTerm ? tRecipes('noResultsFound') : tRecipes('noRecipes')}
+      </p>
+    );
+  };
 
   return (
     <div className="grid grid-rows-[auto_1fr_auto] items-start justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
@@ -139,40 +160,7 @@ export default function Home() {
         </div>
         
         {/* Recipe List Section */}
-        {filteredRecipes.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredRecipes.map((recipe) => (
-              <div key={recipe._id} className="bg-white dark:bg-neutral-800 shadow-lg rounded-lg overflow-hidden transition-transform hover:scale-105">
-                {recipe.imageUrls && recipe.imageUrls.length > 0 && (
-                  <Image 
-                    src={recipe.imageUrls[0]} // Display the first image as a preview
-                    alt={recipe.title} 
-                    width={400} 
-                    height={250} 
-                    className="w-full h-48 object-cover"
-                  />
-                )}
-                <div className="p-4">
-                  <h3 className="text-xl font-semibold mb-2 text-orangey-accent">{recipe.title}</h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-300 mb-3 truncate">{recipe.description}</p>
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs text-gray-500 dark:text-gray-400">
-                      {recipe.prepTime && recipe.cookTime ? `${tRecipes('prep')}: ${recipe.prepTime} | ${tRecipes('cook')}: ${recipe.cookTime}` : tRecipes('timeNotSpecified')}
-                    </span>
-                    <Link href={`/recipes/${recipe._id}`} className="text-sm text-blue-500 hover:underline">
-                      {tRecipes('viewRecipe')}
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <p className="text-center text-gray-500 dark:text-gray-400">
-            {debouncedSearchTerm ? tRecipes('noResultsFound') : tRecipes('noRecipes')} 
-            {/* Display different message if debouncedSearchTerm exists */}
-          </p>
-        )}
+        {renderRecipeList()}
       </main>
       <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center mt-10">
         <p className="text-sm text-gray-500 dark:text-gray-400">
