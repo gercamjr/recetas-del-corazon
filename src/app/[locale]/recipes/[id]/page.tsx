@@ -1,3 +1,4 @@
+import { use } from "react";
 import { NextPage } from "next";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
@@ -23,7 +24,8 @@ interface RecipeDetailPageProps {
   };
 }
 
-const RecipeDetailPage: NextPage<RecipeDetailPageProps> = ({ params }) => {
+const RecipeDetailPage: NextPage<RecipeDetailPageProps> = props => {
+  const params = props.params;
   setRequestLocale(params.locale);
   const t = useTranslations("RecipesPage");
   const tNav = useTranslations("Navigation");

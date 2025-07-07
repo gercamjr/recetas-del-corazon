@@ -25,7 +25,10 @@
     "tags": "Tags",
     "notes": "Notes",
     "author": "Author",
-    "lastUpdated": "Last Updated"
+    "lastUpdated": "Last Updated",
+    "searchPlaceholder": "Search Recipes (name, ingredient, category)",
+    "noResultsFound": "No recipes found matching your search",
+    "allRightsReserved": "All rights reserved"
   },
   "AddRecipePage": {
     "pageTitle": "Add a New Recipe",
@@ -56,10 +59,12 @@
     "notesLabel": "Additional Notes (optional)",
     "notesPlaceholder": "Any extra tips, variations, or story behind the recipe...",
     "submitButton": "Add Recipe",
-    "successMessage": "Recipe submitted successfully (logged to console)!"
+    "successMessage": "Recipe submitted successfully (logged to console)!",
+    "allRightsReserved": "All rights reserved"
   },
   "Forms": {
     "errorMessage": "Please fill out all required fields.",
-    "fieldRequired": "This field is required."
+    "fieldRequired": "This field is required.",
+    "allRightsReserved": "All rights reserved"
   }
 }

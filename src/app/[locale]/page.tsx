@@ -1,16 +1,12 @@
+'use client';
+
+import { useState, useEffect } from "react";
 import Image from "next/image";
-import {useTranslations} from 'next-intl';
-import {Link} from '@/i18n/navigation';
-import {setRequestLocale} from 'next-intl/server';
-import {routing} from '@/i18n/routing';
-import type { Recipe } from "@/types/recipe"; // Added import for Recipe type
+import { useTranslations, useLocale } from 'next-intl';
+import { Link } from '@/i18n/navigation';
+import type { Recipe } from "@/types/recipe";
 
-// Enable static rendering for this page
-export function generateStaticParams() {
-  return routing.locales.map((locale) => ({locale}));
-}
-
-// Mock Recipe Data (Temporary)
+// Mock Recipe Data (Temporary) - This would typically come from an API
 const mockRecipes: Recipe[] = [
   {
     _id: '1',
@@ -31,7 +27,7 @@ const mockRecipes: Recipe[] = [
       'Combine pasta with guanciale. Then, quickly mix in egg mixture. Add pasta water if needed to create a creamy sauce.',
       'Serve immediately with a generous sprinkle of black pepper and more Pecorino.'
     ],
-    imageUrls: ['/mock-images/carbonara1.jpg', '/mock-images/carbonara2.jpg'], // Placeholder image URLs
+    imageUrls: ['https://picsum.photos/200/400', 'https://picsum.photos/200/400'],
     tags: ['pasta', 'italian', 'classic'],
     prepTime: '10 mins',
     cookTime: '15 mins',
@@ -62,7 +58,7 @@ const mockRecipes: Recipe[] = [
       'Add heavy cream and cook for another 5 minutes.',
       'Garnish with cilantro and serve with rice or naan.'
     ],
-    imageUrls: ['/mock-images/tikka-masala.jpg'], // Placeholder image URL
+    imageUrls: ['https://picsum.photos/seed/picsum/200/400'],
     tags: ['indian', 'curry', 'chicken'],
     prepTime: '20 mins (plus marination)',
     cookTime: '30 mins',
@@ -72,15 +68,49 @@ const mockRecipes: Recipe[] = [
     updatedAt: new Date(),
     language: 'en',
   },
+  // Add more mock recipes if desired
 ];
 
-export default function Home({params: {locale}}: {params: {locale: string}}) {
-  // Enable static rendering
-  setRequestLocale(locale);
+const DEBOUNCE_DELAY = 300; // milliseconds
+
+export default function Home() {
+  const locale = useLocale(); // Get locale using the hook
 
   const t = useTranslations('HomePage');
   const tNav = useTranslations('Navigation');
-  const tRecipes = useTranslations('RecipesPage'); // Added for recipe-specific translations
+  const tRecipes = useTranslations('RecipesPage');
+
+  const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
+  const [filteredRecipes, setFilteredRecipes] = useState<Recipe[]>(mockRecipes);
+
+  // Effect to update debouncedSearchTerm after user stops typing
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, DEBOUNCE_DELAY);
+
+    // Cleanup function to clear the timeout if searchTerm changes before delay
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchTerm]); // Only re-call effect if searchTerm changes
+
+  // Effect to filter recipes based on debouncedSearchTerm
+  useEffect(() => {
+    const lowercasedSearchTerm = debouncedSearchTerm.toLowerCase();
+    if (lowercasedSearchTerm === '') {
+      setFilteredRecipes(mockRecipes);
+    } else {
+      const results = mockRecipes.filter(recipe => 
+        recipe.title.toLowerCase().includes(lowercasedSearchTerm) ||
+        recipe.description.toLowerCase().includes(lowercasedSearchTerm) ||
+        (recipe.tags && recipe.tags.some(tag => tag.toLowerCase().includes(lowercasedSearchTerm))) ||
+        (recipe.ingredients && recipe.ingredients.some(ingredient => ingredient.name.toLowerCase().includes(lowercasedSearchTerm)))
+      );
+      setFilteredRecipes(results);
+    }
+  }, [debouncedSearchTerm]); // Only re-call effect if debouncedSearchTerm changes
 
   return (
     <div className="grid grid-rows-[auto_1fr_auto] items-start justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
@@ -97,12 +127,21 @@ export default function Home({params: {locale}}: {params: {locale: string}}) {
         </nav>
       </header>
       <main className="flex flex-col gap-8 w-full max-w-4xl">
-        <h2 className="text-3xl font-bold text-center sm:text-left">{tRecipes('allRecipes')}</h2>
+        <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+          <h2 className="text-3xl font-bold text-center sm:text-left">{tRecipes('allRecipes')}</h2>
+          <input 
+            type="search"
+            placeholder={tRecipes('searchPlaceholder')}
+            value={searchTerm} // Input still controlled by searchTerm directly for responsiveness
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="px-4 py-2 border border-gray-300 dark:border-neutral-600 rounded-md shadow-sm focus:outline-none focus:ring-orangey-accent focus:border-orangey-accent sm:text-sm dark:bg-neutral-700 dark:text-white w-full sm:w-auto"
+          />
+        </div>
         
         {/* Recipe List Section */}
-        {mockRecipes.length > 0 ? (
+        {filteredRecipes.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {mockRecipes.map((recipe) => (
+            {filteredRecipes.map((recipe) => (
               <div key={recipe._id} className="bg-white dark:bg-neutral-800 shadow-lg rounded-lg overflow-hidden transition-transform hover:scale-105">
                 {recipe.imageUrls && recipe.imageUrls.length > 0 && (
                   <Image 
@@ -129,7 +168,10 @@ export default function Home({params: {locale}}: {params: {locale: string}}) {
             ))}
           </div>
         ) : (
-          <p className="text-center text-gray-500 dark:text-gray-400">{tRecipes('noRecipes')}</p>
+          <p className="text-center text-gray-500 dark:text-gray-400">
+            {debouncedSearchTerm ? tRecipes('noResultsFound') : tRecipes('noRecipes')} 
+            {/* Display different message if debouncedSearchTerm exists */}
+          </p>
         )}
       </main>
       <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center mt-10">

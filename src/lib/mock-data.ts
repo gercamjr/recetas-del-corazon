@@ -24,7 +24,7 @@ export const mockRecipes: Recipe[] = [
       'Stir in the crispy guanciale.',
       'Serve immediately, garnished with more grated Pecorino Romano and black pepper.'
     ],
-    imageUrls: ['/mock-images/carbonara1.jpg', '/mock-images/carbonara-ingredients.jpg', '/mock-images/carbonara-finished.jpg'],
+    imageUrls: ['https://picsum.photos/seed/picsum/200/300', 'https://picsum.photos/seed/picsum/200/300', 'https://picsum.photos/seed/picsum/200/300'],
     tags: ['pasta', 'italian', 'classic', 'quick meal', 'comfort food'],
     prepTime: '10 minutes',
     cookTime: '15 minutes',
@@ -64,7 +64,7 @@ export const mockRecipes: Recipe[] = [
       'Taste and adjust seasoning if necessary (salt, spices).',
       'Garnish with freshly chopped cilantro. Serve hot with basmati rice, naan bread, or roti.'
     ],
-    imageUrls: ['/mock-images/tikka-masala-cooking.jpg', '/mock-images/tikka-masala-plated.jpg'],
+    imageUrls: ['https://picsum.photos/seed/picsum/200/400', 'https://picsum.photos/seed/picsum/200/400'],
     tags: ['indian', 'curry', 'chicken', 'creamy', 'main course'],
     prepTime: '20 minutes (plus marination time)',
     cookTime: '30-40 minutes',

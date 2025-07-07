@@ -7,7 +7,8 @@
     "home": "Inicio",
     "recipes": "Recetas",
     "about": "Acerca de",
-    "addRecipe": "Añadir Receta"
+    "addRecipe": "Añadir Receta",
+    "allRightsReserved": "Todos los derechos reservados"
   },
   "RecipesPage": {
     "allRecipes": "Todas las Recetas",
@@ -16,7 +17,6 @@
     "cook": "Cocción",
     "timeNotSpecified": "Tiempo no especificado",
     "noRecipes": "Aún no hay recetas. ¿Qué tal si añades una?",
-    "allRightsReserved": "Todos los derechos reservados",
     "prepTime": "Tiempo de Prep",
     "cookTime": "Tiempo de Cocción",
     "servings": "Porciones",
@@ -25,7 +25,9 @@
     "tags": "Etiquetas",
     "notes": "Notas",
     "author": "Autor",
-    "lastUpdated": "Última Actualización"
+    "lastUpdated": "Última Actualización",
+    "searchPlaceholder": "Buscar Receta (nombre, ingrediente, categoría)",
+    "noResultsFound": "No se encontraron recetas"
   },
   "AddRecipePage": {
     "pageTitle": "Añadir Nueva Receta",
