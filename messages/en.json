@@ -4,6 +4,7 @@
     "allRightsReserved": "All rights reserved"
   },
   "Navigation": {
+    "appTitle": "Recetas del Corazón",
     "home": "Home",
     "recipes": "Recipes",
     "about": "About",
@@ -31,6 +32,7 @@
     "allRightsReserved": "All rights reserved"
   },
   "AddRecipePage": {
+    "appTitle": "Recetas del Corazón",
     "pageTitle": "Add a New Recipe",
     "titleLabel": "Recipe Title",
     "titlePlaceholder": "e.g., Grandma\\'s Apple Pie",

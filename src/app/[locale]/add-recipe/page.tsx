@@ -1,11 +1,11 @@
 'use client';
 
 import { NextPage } from "next";
-import { useTranslations, useLocale } from "next-intl"; // Import useLocale
+import { useTranslations, useLocale } from "next-intl";
 import { Link } from "@/i18n/navigation";
-// import { routing } from "@/i18n/routing"; // No longer needed for generateStaticParams
-import { ChangeEvent, FormEvent, useState, useEffect } from "react";
+import { ChangeEvent, FormEvent, useState } from "react";
 import { RecipeFormData } from "@/types/recipe";
+import { v4 as uuidv4 } from 'uuid';
 
 // This page is a client component.
 // Locale is accessed via context from next-intl, provided by NextIntlClientProvider in the layout.
@@ -95,23 +95,87 @@ const AddRecipePage: NextPage<AddRecipePageProps> = (/*{ params }*/) => { // Rem
     }
   };
 
-  // More complex handlers for ingredients and instructions will be added later
-  // For now, let's keep them simple or handle them directly in JSX for adding/removing
-  // --- The above comment is now outdated by the implementation below ---
-
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setMessage(null);
+
     // Basic validation
-    if (!formData.title || !formData.description) {
+    if (!formData.title || !formData.description || formData.ingredients.length === 0 || formData.instructions.length === 0) {
       setMessage(tForms('errorMessage'));
       return;
     }
-    console.log("Form Data Submitted:", formData);
-    // Here, you would typically send data to your API endpoint
-    // For now, we just log it and show a success message
-    setMessage(t('successMessage')); 
-    // Optionally reset form: setFormData(initialFormData);
+
+    try {
+      let uploadedImageUrls: string[] = [];
+      const recipeId = uuidv4(); // Generate a unique ID for the recipe
+
+      // 1. Handle image uploads if files are present
+      if (formData.imageFiles && formData.imageFiles.length > 0) {
+        setMessage(tForms('uploadingMessage')); // Let the user know uploads are in progress
+
+        for (const file of formData.imageFiles) {
+          // Get a pre-signed URL from our API
+          const presignedResponse = await fetch('/api/s3/upload', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              filename: file.name,
+              contentType: file.type,
+              recipeId: recipeId, // Pass the unique recipe ID
+            }),
+          });
+
+          const { url, key } = await presignedResponse.json();
+
+          if (!presignedResponse.ok) {
+            throw new Error('Failed to get pre-signed URL.');
+          }
+
+          // Upload the file to S3 using the pre-signed URL
+          const uploadResponse = await fetch(url, {
+            method: 'PUT',
+            body: file,
+            headers: { 'Content-Type': file.type },
+          });
+
+          if (!uploadResponse.ok) {
+            throw new Error(`Failed to upload file: ${file.name}`);
+          }
+          
+          // Construct the final URL of the uploaded file
+          const fileUrl = `https://${process.env.NEXT_PUBLIC_AWS_S3_BUCKET_NAME}.s3.${process.env.NEXT_PUBLIC_AWS_S3_REGION}.amazonaws.com/${key}`;
+          uploadedImageUrls.push(fileUrl);
+        }
+      }
+
+      // 2. Submit the recipe data (with image URLs) to the recipe API
+      const recipePayload = {
+        ...formData,
+        imageUrls: uploadedImageUrls,
+        imageFiles: undefined, // We don't need to send the files themselves to this endpoint
+      };
+
+      const response = await fetch('/api/recipes', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(recipePayload),
+      });
+
+      const result = await response.json();
+
+      if (response.ok && result.success) {
+        setMessage(t('successMessage'));
+        setFormData(initialFormData); // Reset form on success
+      } else {
+        setMessage(result.error || tForms('submissionError'));
+      }
+    } catch (error) {
+      console.error("Submission error:", error);
+      const errorMessage = error instanceof Error ? error.message : tForms('submissionError');
+      setMessage(errorMessage);
+    }
   };
 
   return (
@@ -119,8 +183,8 @@ const AddRecipePage: NextPage<AddRecipePageProps> = (/*{ params }*/) => { // Rem
       <header className="bg-white dark:bg-neutral-800 shadow-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center py-4">
           <Link href="/" className="text-2xl font-bold text-orangey-accent">
-            {/* This should ideally be the app title, maybe from a general translation key */}
-            Recetas del Corazón 
+            {/* Use a translation key for the app title */}
+            {tNav('appTitle')}
           </Link>
           <nav>
             <ul className="flex gap-4 items-center">
