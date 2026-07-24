@@ -44,6 +44,11 @@
     "loading": "Cargando recetas",
     "loadErrorTitle": "No pudimos cargar las recetas",
     "loadErrorDescription": "Comprueba tu conexión e inténtalo de nuevo.",
+    "recipeLoadErrorTitle": "No pudimos cargar esta receta",
+    "recipeLoadErrorDescription": "El servicio de recetas no está disponible temporalmente. Inténtalo de nuevo en unos momentos.",
+    "recipeNotFoundTitle": "Receta no encontrada",
+    "recipeNotFoundDescription": "Es posible que esta receta se haya eliminado o que el enlace sea incorrecto.",
+    "noImages": "No hay imágenes disponibles para esta receta",
     "retry": "Intentar de nuevo",
     "clearSearch": "Borrar búsqueda",
     "allRightsReserved": "Todos los derechos reservados"
