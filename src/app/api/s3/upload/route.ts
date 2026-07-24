@@ -2,6 +2,7 @@ import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { NextResponse } from 'next/server';
 import { v4 as uuidv4 } from 'uuid';
+import { authorizeWrite } from '@/lib/write-auth';
 
 type UploadInput = {
   filename: string;
@@ -33,6 +34,9 @@ function validateUploadInput(value: unknown): UploadInput | null {
 }
 
 export async function POST(request: Request) {
+  const authError = authorizeWrite(request);
+  if (authError) return authError;
+
   let body: unknown;
   try {
     body = await request.json();

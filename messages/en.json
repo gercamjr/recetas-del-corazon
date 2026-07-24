@@ -52,6 +52,9 @@
   "AddRecipePage": {
     "appTitle": "Recetas del Corazón",
     "pageTitle": "Add a New Recipe",
+    "familyTokenLabel": "Family access token",
+    "familyTokenPlaceholder": "Enter the shared family token",
+    "familyTokenHint": "Saved only in this browser tab until you close it.",
     "titleLabel": "Recipe Title",
     "titlePlaceholder": "e.g., Grandma\\'s Apple Pie",
     "descriptionLabel": "Description",

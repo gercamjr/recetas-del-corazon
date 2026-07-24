@@ -7,9 +7,11 @@ const awsVariables = [
   'AWS_S3_BUCKET_NAME',
 ] as const;
 const originalValues = Object.fromEntries(awsVariables.map((name) => [name, process.env[name]]));
+const originalFamilyToken = process.env.FAMILY_ACCESS_TOKEN;
 
 beforeEach(() => {
   for (const name of awsVariables) delete process.env[name];
+  process.env.FAMILY_ACCESS_TOKEN = 'test-family-token';
   vi.resetModules();
 });
 
@@ -19,12 +21,17 @@ afterEach(() => {
     if (value === undefined) delete process.env[name];
     else process.env[name] = value;
   }
+  if (originalFamilyToken === undefined) delete process.env.FAMILY_ACCESS_TOKEN;
+  else process.env.FAMILY_ACCESS_TOKEN = originalFamilyToken;
 });
 
 function jsonRequest(body: unknown) {
   return new Request('http://localhost/api/s3/upload', {
     method: 'POST',
-    headers: { 'content-type': 'application/json' },
+    headers: {
+      'content-type': 'application/json',
+      'x-family-token': 'test-family-token',
+    },
     body: JSON.stringify(body),
   });
 }
@@ -50,6 +57,7 @@ describe('S3 upload API', () => {
     const { POST } = await import('./route');
     const request = new Request('http://localhost/api/s3/upload', {
       method: 'POST',
+      headers: { 'x-family-token': 'test-family-token' },
       body: '{bad json',
     });
 

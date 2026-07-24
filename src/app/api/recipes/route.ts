@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import dbConnect, { MissingEnvironmentError } from '@/lib/mongodb';
 import { validateRecipeInput } from '@/lib/recipe-validation';
+import { authorizeWrite } from '@/lib/write-auth';
 import RecipeModel from '@/models/Recipe';
 
 function databaseErrorResponse(error: unknown, operation: string) {
@@ -30,6 +31,9 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  const authError = authorizeWrite(request);
+  if (authError) return authError;
+
   let body: unknown;
   try {
     body = await request.json();
