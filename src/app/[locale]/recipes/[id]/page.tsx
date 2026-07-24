@@ -1,10 +1,9 @@
 import { Link } from "@/i18n/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import Image from "next/image";
-import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import LocaleSwitcher from '@/components/LocaleSwitcher';
-import { fetchRecipeById, getRecipeApiOrigin } from '@/lib/recipe-detail';
+import { loadRecipeById } from '@/lib/recipe-detail';
 
 export const dynamic = 'force-dynamic';
 
@@ -21,17 +20,8 @@ const RecipeDetailPage = async ({params: paramsPromise}: RecipeDetailPageProps) 
   const t = await getTranslations({locale: params.locale, namespace: "RecipesPage"});
   const tNav = await getTranslations({locale: params.locale, namespace: "Navigation"});
 
-  const requestHeaders = await headers();
-  const host = requestHeaders.get('x-forwarded-host') ?? requestHeaders.get('host');
-  const origin = getRecipeApiOrigin({
-    vercelUrl: process.env.VERCEL_URL,
-    nodeEnv: process.env.NODE_ENV,
-    host,
-    forwardedProto: requestHeaders.get('x-forwarded-proto'),
-  });
-  const result = origin
-    ? await fetchRecipeById(params.id, origin)
-    : { status: 'error' as const };
+  // Prefer direct Mongo load in RSC (avoids self-HTTP origin issues on Vercel).
+  const result = await loadRecipeById(params.id);
 
   if (result.status === 'not-found') {
     notFound();
