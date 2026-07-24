@@ -6,7 +6,6 @@ import { setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import Image from "next/image";
 import { mockRecipes } from "@/lib/mock-data"; // Import mock data
-import { Recipe } from "@/types/recipe";
 import { notFound } from "next/navigation";
 
 // Enable static rendering and generate routes for each recipe
@@ -18,14 +17,14 @@ export function generateStaticParams() {
 }
 
 interface RecipeDetailPageProps {
-  params: {
+  params: Promise<{
     locale: string;
     id: string;
-  };
+  }>;
 }
 
 const RecipeDetailPage: NextPage<RecipeDetailPageProps> = props => {
-  const params = props.params;
+  const params = use(props.params);
   setRequestLocale(params.locale);
   const t = useTranslations("RecipesPage");
   const tNav = useTranslations("Navigation");

@@ -4,6 +4,7 @@
     "greeting": "¡Hola, mundo!"
   },
   "Navigation": {
+    "appTitle": "Recetas del Corazón",
     "home": "Inicio",
     "recipes": "Recetas",
     "about": "Acerca de",
@@ -27,7 +28,8 @@
     "author": "Autor",
     "lastUpdated": "Última Actualización",
     "searchPlaceholder": "Buscar Receta (nombre, ingrediente, categoría)",
-    "noResultsFound": "No se encontraron recetas"
+    "noResultsFound": "No se encontraron recetas",
+    "allRightsReserved": "Todos los derechos reservados"
   },
   "AddRecipePage": {
     "pageTitle": "Añadir Nueva Receta",

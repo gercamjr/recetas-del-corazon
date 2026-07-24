@@ -1,11 +1,19 @@
 import mongoose from 'mongoose';
 
-const MONGODB_URI = process.env.MONGODB_URI;
+export class MissingEnvironmentError extends Error {
+  constructor(variableName: string) {
+    super(`${variableName} is not configured`);
+    this.name = 'MissingEnvironmentError';
+  }
+}
 
-if (!MONGODB_URI) {
-  throw new Error(
-    'Please define the MONGODB_URI environment variable inside .env.local'
-  );
+type MongooseCache = {
+  conn: typeof mongoose | null;
+  promise: Promise<typeof mongoose> | null;
+};
+
+declare global {
+  var mongooseCache: MongooseCache | undefined;
 }
 
 /**
@@ -13,13 +21,15 @@ if (!MONGODB_URI) {
  * in development. This prevents connections from growing exponentially
  * during API Route usage.
  */
-let cached = (global as any).mongoose;
-
-if (!cached) {
-  cached = (global as any).mongoose = { conn: null, promise: null };
-}
+const cached = globalThis.mongooseCache ?? { conn: null, promise: null };
+globalThis.mongooseCache = cached;
 
 async function dbConnect() {
+  const mongodbUri = process.env.MONGODB_URI;
+  if (!mongodbUri) {
+    throw new MissingEnvironmentError('MONGODB_URI');
+  }
+
   if (cached.conn) {
     console.log('MongoDB: Using cached connection.');
     return cached.conn;
@@ -33,7 +43,7 @@ async function dbConnect() {
     };
 
     console.log('MongoDB: Creating new connection promise.');
-    cached.promise = mongoose.connect(MONGODB_URI!, opts).then((mongooseInstance) => {
+    cached.promise = mongoose.connect(mongodbUri, opts).then((mongooseInstance) => {
       console.log('MongoDB: Connection successful.');
       return mongooseInstance;
     }).catch(error => {
