@@ -50,6 +50,9 @@
   },
   "AddRecipePage": {
     "pageTitle": "Añadir Nueva Receta",
+    "familyTokenLabel": "Token de acceso familiar",
+    "familyTokenPlaceholder": "Introduce el token familiar compartido",
+    "familyTokenHint": "Se guarda solo en esta pestaña hasta que la cierres.",
     "titleLabel": "Título de la Receta",
     "titlePlaceholder": "ej., Tarta de Manzana de la Abuela",
     "descriptionLabel": "Descripción",

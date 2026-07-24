@@ -1,12 +1,18 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 const originalMongoUri = process.env.MONGODB_URI;
+const originalFamilyToken = process.env.FAMILY_ACCESS_TOKEN;
 
 afterEach(() => {
   if (originalMongoUri === undefined) {
     delete process.env.MONGODB_URI;
   } else {
     process.env.MONGODB_URI = originalMongoUri;
+  }
+  if (originalFamilyToken === undefined) {
+    delete process.env.FAMILY_ACCESS_TOKEN;
+  } else {
+    process.env.FAMILY_ACCESS_TOKEN = originalFamilyToken;
   }
   vi.resetModules();
 });
@@ -35,10 +41,14 @@ describe('MongoDB configuration handling', () => {
 
   it('validates recipe JSON before attempting a database connection', async () => {
     delete process.env.MONGODB_URI;
+    process.env.FAMILY_ACCESS_TOKEN = 'test-family-token';
     const { POST } = await import('../app/api/recipes/route');
     const request = new Request('http://localhost/api/recipes', {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: {
+        'content-type': 'application/json',
+        'x-family-token': 'test-family-token',
+      },
       body: JSON.stringify({ title: '' }),
     });
 
@@ -52,10 +62,14 @@ describe('MongoDB configuration handling', () => {
 
   it('returns 503 for a valid recipe when MongoDB is not configured', async () => {
     delete process.env.MONGODB_URI;
+    process.env.FAMILY_ACCESS_TOKEN = 'test-family-token';
     const { POST } = await import('../app/api/recipes/route');
     const request = new Request('http://localhost/api/recipes', {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: {
+        'content-type': 'application/json',
+        'x-family-token': 'test-family-token',
+      },
       body: JSON.stringify({
         title: 'Soup',
         description: 'Family soup',

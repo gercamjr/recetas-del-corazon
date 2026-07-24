@@ -3,10 +3,12 @@
 import { NextPage } from "next";
 import { useTranslations, useLocale } from "next-intl";
 import { Link } from "@/i18n/navigation";
-import { ChangeEvent, FormEvent, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { RecipeFormData } from "@/types/recipe";
 import { v4 as uuidv4 } from 'uuid';
 import LocaleSwitcher from '@/components/LocaleSwitcher';
+
+const FAMILY_TOKEN_STORAGE_KEY = 'rdc-family-access-token';
 
 // This page is a client component.
 // Locale is accessed via context from next-intl, provided by NextIntlClientProvider in the layout.
@@ -39,6 +41,17 @@ const AddRecipePage: NextPage = () => {
 
   const [formData, setFormData] = useState<RecipeFormData>(initialFormData);
   const [message, setMessage] = useState<string | null>(null);
+  const [familyToken, setFamilyToken] = useState('');
+
+  useEffect(() => {
+    setFamilyToken(sessionStorage.getItem(FAMILY_TOKEN_STORAGE_KEY) || '');
+  }, []);
+
+  const handleFamilyTokenChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const token = e.target.value;
+    setFamilyToken(token);
+    sessionStorage.setItem(FAMILY_TOKEN_STORAGE_KEY, token);
+  };
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -111,7 +124,10 @@ const AddRecipePage: NextPage = () => {
           // Get a pre-signed URL from our API
           const presignedResponse = await fetch('/api/s3/upload', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+              'Content-Type': 'application/json',
+              'x-family-token': familyToken,
+            },
             body: JSON.stringify({
               filename: file.name,
               contentType: file.type,
@@ -153,6 +169,7 @@ const AddRecipePage: NextPage = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'x-family-token': familyToken,
         },
         body: JSON.stringify(recipePayload),
       });
@@ -200,6 +217,13 @@ const AddRecipePage: NextPage = () => {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <label htmlFor="familyToken" className="block text-sm font-medium text-gray-700 dark:text-gray-200">{t('familyTokenLabel')}</label>
+              <input type="password" name="familyToken" id="familyToken" value={familyToken} onChange={handleFamilyTokenChange} placeholder={t('familyTokenPlaceholder')} required autoComplete="current-password"
+                     className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-neutral-600 rounded-md shadow-sm focus:outline-none focus:ring-orangey-accent focus:border-orangey-accent sm:text-sm dark:bg-neutral-700 dark:text-white" />
+              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{t('familyTokenHint')}</p>
+            </div>
+
             <div>
               <label htmlFor="title" className="block text-sm font-medium text-gray-700 dark:text-gray-200">{t('titleLabel')}</label>
               <input type="text" name="title" id="title" value={formData.title} onChange={handleChange} placeholder={t('titlePlaceholder')} required
