@@ -37,6 +37,11 @@ const RecipeSchema = new Schema<RecipeDocument>({
   // Timestamps are automatically managed by Mongoose if {timestamps: true} is set
 }, { timestamps: true }); // Adds createdAt and updatedAt fields automatically
 
+RecipeSchema.index({ title: 1 });
+RecipeSchema.index({ tags: 1 });
+RecipeSchema.index({ language: 1 });
+RecipeSchema.index({ updatedAt: -1 });
+
 // Create and export the Mongoose model
 // The third argument is the collection name in MongoDB. Mongoose usually pluralizes the model name.
 // Explicitly setting it to 'recipes'
