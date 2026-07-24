@@ -1,34 +1,32 @@
-import { use } from "react";
-import { NextPage } from "next";
-import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
-import { setRequestLocale } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import Image from "next/image";
 import { mockRecipes } from "@/lib/mock-data"; // Import mock data
-import { Recipe } from "@/types/recipe";
+
 import { notFound } from "next/navigation";
+import LocaleSwitcher from '@/components/LocaleSwitcher';
 
 // Enable static rendering and generate routes for each recipe
 export function generateStaticParams() {
-  const recipeParams = mockRecipes.flatMap(recipe => 
+  const recipeParams = mockRecipes.flatMap(recipe =>
     routing.locales.map(locale => ({ locale, id: recipe._id }))
   );
   return recipeParams;
 }
 
 interface RecipeDetailPageProps {
-  params: {
+  params: Promise<{
     locale: string;
     id: string;
-  };
+  }>;
 }
 
-const RecipeDetailPage: NextPage<RecipeDetailPageProps> = props => {
-  const params = props.params;
+const RecipeDetailPage = async ({params: paramsPromise}: RecipeDetailPageProps) => {
+  const params = await paramsPromise;
   setRequestLocale(params.locale);
-  const t = useTranslations("RecipesPage");
-  const tNav = useTranslations("Navigation");
+  const t = await getTranslations({locale: params.locale, namespace: "RecipesPage"});
+  const tNav = await getTranslations({locale: params.locale, namespace: "Navigation"});
 
   const recipe = mockRecipes.find((r) => r._id === params.id);
 
@@ -47,7 +45,7 @@ const RecipeDetailPage: NextPage<RecipeDetailPageProps> = props => {
             <ul className="flex gap-4 items-center">
               <li><Link href="/" className="hover:text-orangey-accent transition-colors">{tNav('home')}</Link></li>
               <li><Link href="/add-recipe" className="hover:text-orangey-accent transition-colors">{tNav('addRecipe')}</Link></li>
-              {/* Language switcher can be added here later */}
+              <li><LocaleSwitcher /></li>
             </ul>
           </nav>
         </div>
@@ -59,12 +57,12 @@ const RecipeDetailPage: NextPage<RecipeDetailPageProps> = props => {
           {recipe.imageUrls && recipe.imageUrls.length > 0 && (
             <div className="relative w-full h-64 sm:h-80 md:h-96">
               {/* Basic image display, can be enhanced with a carousel later */}
-              <Image 
-                src={recipe.imageUrls[0]} 
+              <Image
+                src={recipe.imageUrls[0]}
                 alt={`Image 1 for ${recipe.title}`}
                 layout="fill"
                 objectFit="cover"
-                priority 
+                priority
               />
               {/* TODO: Add a simple carousel or grid for multiple images */}
             </div>

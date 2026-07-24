@@ -1,7 +1,18 @@
 {
   "HomePage": {
-    "title": "Welcome to Recetas del Corazon!",
+    "eyebrow": "From our kitchen to yours",
+    "title": "Recipes made to be shared",
+    "description": "Keep the dishes, stories, and little secrets that bring your family together in one welcoming place.",
     "allRightsReserved": "All rights reserved"
+  },
+  "Metadata": {
+    "title": "Recetas del Corazón",
+    "description": "Discover and preserve the family recipes that bring everyone to the table."
+  },
+  "LocaleSwitcher": {
+    "en": "English",
+    "es": "Español",
+    "switchTo": "Switch language to {language}"
   },
   "Navigation": {
     "appTitle": "Recetas del Corazón",
@@ -9,7 +20,8 @@
     "recipes": "Recipes",
     "about": "About",
     "addRecipe": "Add Recipe",
-    "allRightsReserved": "All rights reserved"
+    "allRightsReserved": "All rights reserved",
+    "primaryNavigation": "Primary navigation"
   },
   "RecipesPage": {
     "allRecipes": "All Recipes",
@@ -27,8 +39,14 @@
     "notes": "Notes",
     "author": "Author",
     "lastUpdated": "Last Updated",
-    "searchPlaceholder": "Search Recipes (name, ingredient, category)",
-    "noResultsFound": "No recipes found matching your search",
+    "searchPlaceholder": "Search by name, ingredient, or tag",
+    "searchLabel": "Search recipes",
+    "noResultsFound": "No recipes match that search",
+    "loading": "Loading recipes",
+    "loadErrorTitle": "We couldn't load the recipes",
+    "loadErrorDescription": "Please check your connection and try again.",
+    "retry": "Try again",
+    "clearSearch": "Clear search",
     "allRightsReserved": "All rights reserved"
   },
   "AddRecipePage": {

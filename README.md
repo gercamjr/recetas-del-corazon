@@ -16,6 +16,17 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+The root route redirects to the default English application at `/en`. Spanish is available at `/es` and from the language switcher.
+
+## Recipe image host
+
+Uploaded recipe images use the host derived from these public deployment variables:
+
+- `NEXT_PUBLIC_AWS_S3_BUCKET_NAME`
+- `NEXT_PUBLIC_AWS_S3_REGION`
+
+Together they produce `https://<bucket>.s3.<region>.amazonaws.com/recipes/...`. The exact bucket hostname is intentionally not committed; set both values in Vercel once the production bucket is provisioned. `next.config.ts` restricts the image path to `/recipes/**` and uses the exact host whenever those variables are present.
+
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
