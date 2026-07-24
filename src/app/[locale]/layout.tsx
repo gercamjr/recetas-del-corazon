@@ -41,7 +41,7 @@ export default async function LocaleLayout(
     children
   } = props;
 
-  if (!hasLocale(routing.locales, locale as any)) {
+  if (!hasLocale(routing.locales, locale)) {
     notFound();
   }
 

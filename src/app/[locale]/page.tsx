@@ -2,15 +2,13 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { useTranslations, useLocale } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import type { Recipe } from "@/types/recipe";
 
 const DEBOUNCE_DELAY = 300; // milliseconds
 
 export default function Home() {
-  const locale = useLocale(); // Get locale using the hook
-
   const t = useTranslations('HomePage');
   const tNav = useTranslations('Navigation');
   const tRecipes = useTranslations('RecipesPage');

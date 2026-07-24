@@ -15,14 +15,7 @@ import { v4 as uuidv4 } from 'uuid';
 //   return routing.locales.map((locale) => ({ locale }));
 // }
 
-// Removed params from props as locale will be obtained from useLocale hook
-interface AddRecipePageProps {
-  // params: { // No longer receiving params this way
-  //   locale: string;
-  // };
-}
-
-const AddRecipePage: NextPage<AddRecipePageProps> = (/*{ params }*/) => { // Removed params
+const AddRecipePage: NextPage = () => {
   const locale = useLocale(); // Get current locale using the hook
   const t = useTranslations("AddRecipePage");
   const tNav = useTranslations("Navigation");
@@ -106,7 +99,7 @@ const AddRecipePage: NextPage<AddRecipePageProps> = (/*{ params }*/) => { // Rem
     }
 
     try {
-      let uploadedImageUrls: string[] = [];
+      const uploadedImageUrls: string[] = [];
       const recipeId = uuidv4(); // Generate a unique ID for the recipe
 
       // 1. Handle image uploads if files are present
