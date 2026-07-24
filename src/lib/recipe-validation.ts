@@ -22,6 +22,28 @@ type ValidationResult =
   | { success: true; data: ValidatedRecipeInput }
   | { success: false; error: string };
 
+export type ValidatedRecipePatch = Pick<
+  ValidatedRecipeInput,
+  'title' | 'description' | 'ingredients' | 'instructions' | 'imageUrls' | 'tags'
+>;
+
+type PatchValidationResult =
+  | { success: true; data: Partial<ValidatedRecipePatch> }
+  | { success: false; error: string };
+
+const patchFields = [
+  'title',
+  'description',
+  'ingredients',
+  'instructions',
+  'tags',
+  'imageUrls',
+] as const;
+
+export function isValidRecipeId(value: unknown): value is string {
+  return typeof value === 'string' && /^[a-f\d]{24}$/i.test(value);
+}
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
@@ -48,6 +70,89 @@ function stringArray(value: unknown, field: string): { data?: string[]; error?: 
   return { data: values as string[] };
 }
 
+function ingredientArray(value: unknown): { data?: IngredientInput[]; error?: string } {
+  if (!Array.isArray(value) || value.length === 0) {
+    return { error: 'ingredients must be a non-empty array' };
+  }
+
+  const ingredients: IngredientInput[] = [];
+  for (const ingredient of value) {
+    if (!isRecord(ingredient)) {
+      return { error: 'each ingredient must be an object' };
+    }
+
+    const name = nonEmptyString(ingredient.name);
+    const quantity = nonEmptyString(ingredient.quantity);
+    const unit = optionalString(ingredient.unit);
+    if (!name || !quantity || unit === null) {
+      return {
+        error: 'each ingredient requires non-empty name and quantity strings; unit must be a string when provided',
+      };
+    }
+
+    ingredients.push({ name, quantity, ...(unit === undefined ? {} : { unit }) });
+  }
+
+  return { data: ingredients };
+}
+
+function hasInvalidImageUrl(urls: string[]) {
+  return urls.some((url) => {
+    try {
+      const parsed = new URL(url);
+      return parsed.protocol !== 'https:' && parsed.protocol !== 'http:';
+    } catch {
+      return true;
+    }
+  });
+}
+
+export function validateRecipePatch(value: unknown): PatchValidationResult {
+  if (!isRecord(value)) {
+    return { success: false, error: 'Request body must be a JSON object' };
+  }
+
+  const keys = Object.keys(value);
+  if (keys.length === 0) {
+    return { success: false, error: 'Request body must include at least one supported field' };
+  }
+  if (keys.some((key) => !patchFields.includes(key as typeof patchFields[number]))) {
+    return { success: false, error: 'Request body contains unsupported fields' };
+  }
+
+  const data: Partial<ValidatedRecipePatch> = {};
+  for (const field of ['title', 'description'] as const) {
+    if (value[field] !== undefined) {
+      const normalized = nonEmptyString(value[field]);
+      if (!normalized) return { success: false, error: `${field} must be a non-empty string` };
+      data[field] = normalized;
+    }
+  }
+
+  if (value.ingredients !== undefined) {
+    const result = ingredientArray(value.ingredients);
+    if (result.error) return { success: false, error: result.error };
+    data.ingredients = result.data;
+  }
+
+  for (const field of ['instructions', 'tags', 'imageUrls'] as const) {
+    if (value[field] === undefined) continue;
+    const result = stringArray(value[field], field);
+    if (result.error || (field === 'instructions' && result.data?.length === 0)) {
+      return {
+        success: false,
+        error: result.error ?? 'instructions must be a non-empty array',
+      };
+    }
+    if (field === 'imageUrls' && hasInvalidImageUrl(result.data ?? [])) {
+      return { success: false, error: 'imageUrls must contain valid HTTP(S) URLs' };
+    }
+    data[field] = result.data;
+  }
+
+  return { success: true, data };
+}
+
 export function validateRecipeInput(value: unknown): ValidationResult {
   if (!isRecord(value)) {
     return { success: false, error: 'Request body must be a JSON object' };
@@ -59,28 +164,9 @@ export function validateRecipeInput(value: unknown): ValidationResult {
   const description = nonEmptyString(value.description);
   if (!description) return { success: false, error: 'description must be a non-empty string' };
 
-  if (!Array.isArray(value.ingredients) || value.ingredients.length === 0) {
-    return { success: false, error: 'ingredients must be a non-empty array' };
-  }
-
-  const ingredients: IngredientInput[] = [];
-  for (const ingredient of value.ingredients) {
-    if (!isRecord(ingredient)) {
-      return { success: false, error: 'each ingredient must be an object' };
-    }
-
-    const name = nonEmptyString(ingredient.name);
-    const quantity = nonEmptyString(ingredient.quantity);
-    const unit = optionalString(ingredient.unit);
-    if (!name || !quantity || unit === null) {
-      return {
-        success: false,
-        error: 'each ingredient requires non-empty name and quantity strings; unit must be a string when provided',
-      };
-    }
-
-    ingredients.push({ name, quantity, ...(unit === undefined ? {} : { unit }) });
-  }
+  const ingredientsResult = ingredientArray(value.ingredients);
+  if (ingredientsResult.error) return { success: false, error: ingredientsResult.error };
+  const ingredients = ingredientsResult.data ?? [];
 
   const instructionsResult = stringArray(value.instructions, 'instructions');
   if (instructionsResult.error || instructionsResult.data?.length === 0) {
@@ -94,14 +180,7 @@ export function validateRecipeInput(value: unknown): ValidationResult {
   const imageUrlsResult = stringArray(imageUrlsValue, 'imageUrls');
   if (imageUrlsResult.error) return { success: false, error: imageUrlsResult.error };
   const imageUrls = imageUrlsResult.data ?? [];
-  if (imageUrls.some((url) => {
-    try {
-      const parsed = new URL(url);
-      return parsed.protocol !== 'https:' && parsed.protocol !== 'http:';
-    } catch {
-      return true;
-    }
-  })) {
+  if (hasInvalidImageUrl(imageUrls)) {
     return { success: false, error: 'imageUrls must contain valid HTTP(S) URLs' };
   }
 
