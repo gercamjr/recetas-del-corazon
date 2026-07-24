@@ -17,7 +17,7 @@ const IngredientSchema = new Schema<Ingredient>({
 
 // Define the Mongoose schema for a Recipe document
 // This will extend our existing RecipeType for type safety with Mongoose Document properties
-export interface RecipeDocument extends RecipeType, Document {
+export interface RecipeDocument extends RecipeType, Document<string> {
   _id: string; // Mongoose uses _id as string by default in Document interface
 }
 

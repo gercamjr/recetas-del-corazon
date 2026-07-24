@@ -1,13 +1,18 @@
 import mongoose from 'mongoose';
 
-interface MongooseCache {
-  conn: typeof mongoose | null;
-  promise: Promise<typeof mongoose> | null;
+export class MissingEnvironmentError extends Error {
+  constructor(variableName: string) {
+    super(`${variableName} is not configured`);
+    this.name = 'MissingEnvironmentError';
+  }
 }
 
+type MongooseCache = {
+  conn: typeof mongoose | null;
+  promise: Promise<typeof mongoose> | null;
+};
+
 declare global {
-  // `var` is required for a global declaration that survives hot reloads.
-  // eslint-disable-next-line no-var
   var mongooseCache: MongooseCache | undefined;
 }
 
@@ -16,13 +21,13 @@ declare global {
  * in development. This prevents connections from growing exponentially
  * during API Route usage.
  */
-const cached = globalThis.mongooseCache ??= {conn: null, promise: null};
+const cached = globalThis.mongooseCache ?? { conn: null, promise: null };
+globalThis.mongooseCache = cached;
 
 async function dbConnect() {
   const mongodbUri = process.env.MONGODB_URI;
-
   if (!mongodbUri) {
-    throw new Error('Please define the MONGODB_URI environment variable inside .env.local');
+    throw new MissingEnvironmentError('MONGODB_URI');
   }
 
   if (cached.conn) {
@@ -56,7 +61,7 @@ async function dbConnect() {
     cached.promise = null;
     throw e;
   }
-
+  
   return cached.conn;
 }
 
