@@ -1,19 +1,12 @@
 import { Link } from "@/i18n/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { routing } from "@/i18n/routing";
 import Image from "next/image";
-import { mockRecipes } from "@/lib/mock-data"; // Import mock data
-
+import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import LocaleSwitcher from '@/components/LocaleSwitcher';
+import { fetchRecipeById, getRecipeApiOrigin } from '@/lib/recipe-detail';
 
-// Enable static rendering and generate routes for each recipe
-export function generateStaticParams() {
-  const recipeParams = mockRecipes.flatMap(recipe =>
-    routing.locales.map(locale => ({ locale, id: recipe._id }))
-  );
-  return recipeParams;
-}
+export const dynamic = 'force-dynamic';
 
 interface RecipeDetailPageProps {
   params: Promise<{
@@ -28,11 +21,38 @@ const RecipeDetailPage = async ({params: paramsPromise}: RecipeDetailPageProps) 
   const t = await getTranslations({locale: params.locale, namespace: "RecipesPage"});
   const tNav = await getTranslations({locale: params.locale, namespace: "Navigation"});
 
-  const recipe = mockRecipes.find((r) => r._id === params.id);
+  const requestHeaders = await headers();
+  const host = requestHeaders.get('x-forwarded-host') ?? requestHeaders.get('host');
+  const origin = getRecipeApiOrigin({
+    vercelUrl: process.env.VERCEL_URL,
+    nodeEnv: process.env.NODE_ENV,
+    host,
+    forwardedProto: requestHeaders.get('x-forwarded-proto'),
+  });
+  const result = origin
+    ? await fetchRecipeById(params.id, origin)
+    : { status: 'error' as const };
 
-  if (!recipe) {
-    notFound(); // If recipe not found, show 404 page
+  if (result.status === 'not-found') {
+    notFound();
   }
+
+  if (result.status === 'error') {
+    return (
+      <div className="grid min-h-screen place-items-center bg-smoky-black px-5 text-neutral-200">
+        <div role="alert" className="w-full max-w-xl rounded-2xl border border-red-900/70 bg-red-950/40 p-8 text-center">
+          <h1 className="text-2xl font-semibold text-red-200">{t('recipeLoadErrorTitle')}</h1>
+          <p className="mt-3 text-red-300">{t('recipeLoadErrorDescription')}</p>
+          <div className="mt-6 flex items-center justify-center gap-5">
+            <Link href="/" className="font-semibold text-orangey-accent hover:text-orange-300">{tNav('home')}</Link>
+            <LocaleSwitcher />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const recipe = result.recipe;
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-neutral-900 font-[family-name:var(--font-geist-sans)]">
@@ -53,18 +73,20 @@ const RecipeDetailPage = async ({params: paramsPromise}: RecipeDetailPageProps) 
 
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <article className="bg-white dark:bg-neutral-800 shadow-xl rounded-lg overflow-hidden">
-          {/* Image Carousel/Gallery */}
-          {recipe.imageUrls && recipe.imageUrls.length > 0 && (
+          {recipe.imageUrls && recipe.imageUrls.length > 0 ? (
             <div className="relative w-full h-64 sm:h-80 md:h-96">
-              {/* Basic image display, can be enhanced with a carousel later */}
               <Image
                 src={recipe.imageUrls[0]}
                 alt={`Image 1 for ${recipe.title}`}
-                layout="fill"
-                objectFit="cover"
+                fill
+                className="object-cover"
                 priority
+                sizes="100vw"
               />
-              {/* TODO: Add a simple carousel or grid for multiple images */}
+            </div>
+          ) : (
+            <div className="flex h-64 items-center justify-center bg-neutral-100 text-sm text-neutral-500 dark:bg-neutral-700 dark:text-neutral-300 sm:h-80 md:h-96">
+              {t('noImages')}
             </div>
           )}
 

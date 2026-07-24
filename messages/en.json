@@ -45,6 +45,11 @@
     "loading": "Loading recipes",
     "loadErrorTitle": "We couldn't load the recipes",
     "loadErrorDescription": "Please check your connection and try again.",
+    "recipeLoadErrorTitle": "We couldn't load this recipe",
+    "recipeLoadErrorDescription": "The recipe service is temporarily unavailable. Please try again shortly.",
+    "recipeNotFoundTitle": "Recipe not found",
+    "recipeNotFoundDescription": "This recipe may have been removed or the link may be incorrect.",
+    "noImages": "No images available for this recipe",
     "retry": "Try again",
     "clearSearch": "Clear search",
     "allRightsReserved": "All rights reserved"
