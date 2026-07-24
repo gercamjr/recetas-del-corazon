@@ -68,3 +68,8 @@ Do not promote the existing stale deployment. Build a fresh deployment from the 
 This shared token is an MVP abuse guard, not user identity or ownership. Add per-user authentication, authorization, token rotation, and rate limiting before expanding access beyond the trusted family group.
 
 Because the previously deployed app used a React Server Components-vulnerable Next.js release, rotate MongoDB and AWS credentials after the patched deployment is live if those credentials were present in that deployment.
+
+
+## Family login
+
+Set `NEXTAUTH_URL` and `NEXTAUTH_SECRET` on Vercel. Seed users with `scripts/seed-family-users.ts` and `FAMILY_SEED_USERS` JSON. Shared `FAMILY_ACCESS_TOKEN` is retired; members sign in at `/en/login` and stay signed in for 30 days.

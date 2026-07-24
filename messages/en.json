@@ -21,7 +21,9 @@
     "about": "About",
     "addRecipe": "Add Recipe",
     "allRightsReserved": "All rights reserved",
-    "primaryNavigation": "Primary navigation"
+    "primaryNavigation": "Primary navigation",
+    "signIn": "Sign in",
+    "signOut": "Sign out"
   },
   "RecipesPage": {
     "allRecipes": "All Recipes",
@@ -57,9 +59,6 @@
   "AddRecipePage": {
     "appTitle": "Recetas del Corazón",
     "pageTitle": "Add a New Recipe",
-    "familyTokenLabel": "Family access token",
-    "familyTokenPlaceholder": "Enter the shared family token",
-    "familyTokenHint": "Saved only in this browser tab until you close it.",
     "titleLabel": "Recipe Title",
     "titlePlaceholder": "e.g., Grandma\\'s Apple Pie",
     "descriptionLabel": "Description",
@@ -88,11 +87,25 @@
     "notesPlaceholder": "Any extra tips, variations, or story behind the recipe...",
     "submitButton": "Add Recipe",
     "successMessage": "Recipe submitted successfully (logged to console)!",
-    "allRightsReserved": "All rights reserved"
+    "allRightsReserved": "All rights reserved",
+    "mustSignIn": "Please sign in to add a recipe."
   },
   "Forms": {
     "errorMessage": "Please fill out all required fields.",
     "fieldRequired": "This field is required.",
     "allRightsReserved": "All rights reserved"
+  },
+  "Auth": {
+    "signIn": "Sign in",
+    "signOut": "Sign out",
+    "signingIn": "Signing in…",
+    "loginTitle": "Family sign in",
+    "loginSubtitle": "Use the username and password shared with you. Stay signed in on this device.",
+    "username": "Username",
+    "password": "Password",
+    "invalidCredentials": "That username or password did not match.",
+    "loading": "Checking sign-in…",
+    "signedInAs": "Hi, {name}",
+    "familyOnlyNote": "Private family cookbook — accounts are created by the family admin."
   }
 }

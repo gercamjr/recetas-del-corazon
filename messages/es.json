@@ -20,7 +20,9 @@
     "about": "Acerca de",
     "addRecipe": "Añadir Receta",
     "allRightsReserved": "Todos los derechos reservados",
-    "primaryNavigation": "Navegación principal"
+    "primaryNavigation": "Navegación principal",
+    "signIn": "Iniciar sesión",
+    "signOut": "Cerrar sesión"
   },
   "RecipesPage": {
     "allRecipes": "Todas las Recetas",
@@ -55,9 +57,6 @@
   },
   "AddRecipePage": {
     "pageTitle": "Añadir Nueva Receta",
-    "familyTokenLabel": "Token de acceso familiar",
-    "familyTokenPlaceholder": "Introduce el token familiar compartido",
-    "familyTokenHint": "Se guarda solo en esta pestaña hasta que la cierres.",
     "titleLabel": "Título de la Receta",
     "titlePlaceholder": "ej., Tarta de Manzana de la Abuela",
     "descriptionLabel": "Descripción",
@@ -85,10 +84,24 @@
     "notesLabel": "Notas Adicionales (opcional)",
     "notesPlaceholder": "Cualquier consejo extra, variaciones o historia detrás de la receta...",
     "submitButton": "Añadir Receta",
-    "successMessage": "¡Receta enviada con éxito (registrada en la consola)!"
+    "successMessage": "¡Receta enviada con éxito (registrada en la consola)!",
+    "mustSignIn": "Inicia sesión para añadir una receta."
   },
   "Forms": {
     "errorMessage": "Por favor, completa todos los campos obligatorios.",
     "fieldRequired": "Este campo es obligatorio."
+  },
+  "Auth": {
+    "signIn": "Iniciar sesión",
+    "signOut": "Cerrar sesión",
+    "signingIn": "Entrando…",
+    "loginTitle": "Acceso familiar",
+    "loginSubtitle": "Usa el usuario y contraseña que te compartieron. Puedes permanecer conectado en este dispositivo.",
+    "username": "Usuario",
+    "password": "Contraseña",
+    "invalidCredentials": "Usuario o contraseña incorrectos.",
+    "loading": "Comprobando sesión…",
+    "signedInAs": "Hola, {name}",
+    "familyOnlyNote": "Recetario familiar privado — las cuentas las crea el administrador de la familia."
   }
 }

@@ -34,7 +34,7 @@ function validateUploadInput(value: unknown): UploadInput | null {
 }
 
 export async function POST(request: Request) {
-  const authError = authorizeWrite(request);
+  const authError = await authorizeWrite(request);
   if (authError) return authError;
 
   let body: unknown;

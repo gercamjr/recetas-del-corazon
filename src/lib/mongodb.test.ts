@@ -1,7 +1,22 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
+const getServerSession = vi.fn();
+
+vi.mock('next-auth', () => ({
+  getServerSession: (...args: unknown[]) => getServerSession(...args),
+}));
+
+vi.mock('@/lib/auth-options', () => ({
+  authOptions: { providers: [] },
+}));
 
 const originalMongoUri = process.env.MONGODB_URI;
-const originalFamilyToken = process.env.FAMILY_ACCESS_TOKEN;
+
+beforeEach(() => {
+  getServerSession.mockResolvedValue({
+    user: { id: 'u1', username: 'tester', role: 'member', name: 'Tester' },
+  });
+});
 
 afterEach(() => {
   if (originalMongoUri === undefined) {
@@ -9,11 +24,7 @@ afterEach(() => {
   } else {
     process.env.MONGODB_URI = originalMongoUri;
   }
-  if (originalFamilyToken === undefined) {
-    delete process.env.FAMILY_ACCESS_TOKEN;
-  } else {
-    process.env.FAMILY_ACCESS_TOKEN = originalFamilyToken;
-  }
+  getServerSession.mockReset();
   vi.resetModules();
 });
 
@@ -41,13 +52,11 @@ describe('MongoDB configuration handling', () => {
 
   it('validates recipe JSON before attempting a database connection', async () => {
     delete process.env.MONGODB_URI;
-    process.env.FAMILY_ACCESS_TOKEN = 'test-family-token';
     const { POST } = await import('../app/api/recipes/route');
     const request = new Request('http://localhost/api/recipes', {
       method: 'POST',
       headers: {
         'content-type': 'application/json',
-        'x-family-token': 'test-family-token',
       },
       body: JSON.stringify({ title: '' }),
     });
@@ -62,18 +71,16 @@ describe('MongoDB configuration handling', () => {
 
   it('returns 503 for a valid recipe when MongoDB is not configured', async () => {
     delete process.env.MONGODB_URI;
-    process.env.FAMILY_ACCESS_TOKEN = 'test-family-token';
     const { POST } = await import('../app/api/recipes/route');
     const request = new Request('http://localhost/api/recipes', {
       method: 'POST',
       headers: {
         'content-type': 'application/json',
-        'x-family-token': 'test-family-token',
       },
       body: JSON.stringify({
         title: 'Soup',
         description: 'Family soup',
-        ingredients: [{ name: 'Water', quantity: '2 cups' }],
+        ingredients: [{ name: 'Water', quantity: '2', unit: 'cups' }],
         instructions: ['Simmer'],
         language: 'en',
       }),
