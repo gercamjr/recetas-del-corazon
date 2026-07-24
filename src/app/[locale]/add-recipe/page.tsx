@@ -6,6 +6,7 @@ import { Link } from "@/i18n/navigation";
 import { ChangeEvent, FormEvent, useState } from "react";
 import { RecipeFormData } from "@/types/recipe";
 import { v4 as uuidv4 } from 'uuid';
+import LocaleSwitcher from '@/components/LocaleSwitcher';
 
 // This page is a client component.
 // Locale is accessed via context from next-intl, provided by NextIntlClientProvider in the layout.
@@ -134,7 +135,7 @@ const AddRecipePage: NextPage = () => {
           if (!uploadResponse.ok) {
             throw new Error(`Failed to upload file: ${file.name}`);
           }
-          
+
           // Construct the final URL of the uploaded file
           const fileUrl = `https://${process.env.NEXT_PUBLIC_AWS_S3_BUCKET_NAME}.s3.${process.env.NEXT_PUBLIC_AWS_S3_REGION}.amazonaws.com/${key}`;
           uploadedImageUrls.push(fileUrl);
@@ -182,7 +183,7 @@ const AddRecipePage: NextPage = () => {
           <nav>
             <ul className="flex gap-4 items-center">
               <li><Link href="/" className="hover:text-orangey-accent transition-colors">{tNav('home')}</Link></li>
-              {/* Add other relevant nav links */}
+              <li><LocaleSwitcher /></li>
             </ul>
           </nav>
         </div>
@@ -191,7 +192,7 @@ const AddRecipePage: NextPage = () => {
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="max-w-2xl mx-auto bg-white dark:bg-neutral-800 p-6 md:p-8 shadow-xl rounded-lg">
           <h1 className="text-2xl sm:text-3xl font-bold text-orangey-accent mb-6 text-center">{t('pageTitle')}</h1>
-          
+
           {message && (
             <div className={`p-4 mb-4 rounded-md ${message.includes('successfully') ? 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-200' : 'bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-200'}`}>
               {message}
@@ -201,7 +202,7 @@ const AddRecipePage: NextPage = () => {
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label htmlFor="title" className="block text-sm font-medium text-gray-700 dark:text-gray-200">{t('titleLabel')}</label>
-              <input type="text" name="title" id="title" value={formData.title} onChange={handleChange} placeholder={t('titlePlaceholder')} required 
+              <input type="text" name="title" id="title" value={formData.title} onChange={handleChange} placeholder={t('titlePlaceholder')} required
                      className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-neutral-600 rounded-md shadow-sm focus:outline-none focus:ring-orangey-accent focus:border-orangey-accent sm:text-sm dark:bg-neutral-700 dark:text-white" />
             </div>
 
@@ -210,7 +211,7 @@ const AddRecipePage: NextPage = () => {
               <textarea name="description" id="description" value={formData.description} onChange={handleChange} placeholder={t('descriptionPlaceholder')} rows={4} required
                         className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-neutral-600 rounded-md shadow-sm focus:outline-none focus:ring-orangey-accent focus:border-orangey-accent sm:text-sm dark:bg-neutral-700 dark:text-white"></textarea>
             </div>
-            
+
             {/* Dynamic Ingredients Section */}
             <div className="space-y-4">
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">{t('ingredientsLabel')}</label>
@@ -232,7 +233,7 @@ const AddRecipePage: NextPage = () => {
                            className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-neutral-600 rounded-md shadow-sm focus:outline-none focus:ring-orangey-accent focus:border-orangey-accent sm:text-sm dark:bg-neutral-700 dark:text-white" />
                   </div>
                   {formData.ingredients.length > 1 && (
-                    <button type="button" onClick={() => removeIngredientField(index)} 
+                    <button type="button" onClick={() => removeIngredientField(index)}
                             className="mt-1 px-3 py-2 bg-red-500 hover:bg-red-600 text-white rounded-md text-sm font-medium w-full sm:w-auto">
                       {t('removeIngredientButton')}
                     </button>
@@ -313,7 +314,7 @@ const AddRecipePage: NextPage = () => {
             </div>
 
             <div>
-              <button type="submit" 
+              <button type="submit"
                       className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-orangey-accent hover:bg-orangey-accent/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orangey-accent dark:text-smoky-black">
                 {t('submitButton')}
               </button>
