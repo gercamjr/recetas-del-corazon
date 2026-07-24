@@ -4,7 +4,7 @@ import "../globals.css"; // Corrected path
 import {NextIntlClientProvider, hasLocale} from 'next-intl';
 import {notFound} from 'next/navigation';
 import {routing} from '@/i18n/routing';
-import {setRequestLocale} from 'next-intl/server';
+import {getTranslations, setRequestLocale} from 'next-intl/server';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -16,10 +16,33 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "Recetas del Corazón",
-  description: "A family recipe sharing app",
-};
+export async function generateMetadata(
+  {params}: {params: Promise<{locale: string}>}
+): Promise<Metadata> {
+  const {locale} = await params;
+  const t = await getTranslations({locale, namespace: 'Metadata'});
+
+  return {
+    title: {
+      default: t('title'),
+      template: `%s | ${t('title')}`
+    },
+    description: t('description'),
+    applicationName: t('title'),
+    alternates: {
+      languages: {
+        en: '/en',
+        es: '/es'
+      }
+    },
+    openGraph: {
+      title: t('title'),
+      description: t('description'),
+      type: 'website',
+      locale: locale === 'es' ? 'es_ES' : 'en_US'
+    }
+  };
+}
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({locale}));
@@ -41,7 +64,7 @@ export default async function LocaleLayout(
     children
   } = props;
 
-  if (!hasLocale(routing.locales, locale as any)) {
+  if (!hasLocale(routing.locales, locale)) {
     notFound();
   }
 

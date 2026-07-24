@@ -1,14 +1,26 @@
 {
   "HomePage": {
-    "title": "¡Bienvenido a Recetas del Corazón!",
-    "greeting": "¡Hola, mundo!"
+    "eyebrow": "De nuestra cocina a la tuya",
+    "title": "Recetas hechas para compartir",
+    "description": "Guarda en un solo lugar los platos, las historias y los pequeños secretos que reúnen a tu familia."
+  },
+  "Metadata": {
+    "title": "Recetas del Corazón",
+    "description": "Descubre y conserva las recetas familiares que reúnen a todos alrededor de la mesa."
+  },
+  "LocaleSwitcher": {
+    "en": "English",
+    "es": "Español",
+    "switchTo": "Cambiar idioma a {language}"
   },
   "Navigation": {
+    "appTitle": "Recetas del Corazón",
     "home": "Inicio",
     "recipes": "Recetas",
     "about": "Acerca de",
     "addRecipe": "Añadir Receta",
-    "allRightsReserved": "Todos los derechos reservados"
+    "allRightsReserved": "Todos los derechos reservados",
+    "primaryNavigation": "Navegación principal"
   },
   "RecipesPage": {
     "allRecipes": "Todas las Recetas",
@@ -26,8 +38,15 @@
     "notes": "Notas",
     "author": "Autor",
     "lastUpdated": "Última Actualización",
-    "searchPlaceholder": "Buscar Receta (nombre, ingrediente, categoría)",
-    "noResultsFound": "No se encontraron recetas"
+    "searchPlaceholder": "Buscar por nombre, ingrediente o etiqueta",
+    "searchLabel": "Buscar recetas",
+    "noResultsFound": "Ninguna receta coincide con tu búsqueda",
+    "loading": "Cargando recetas",
+    "loadErrorTitle": "No pudimos cargar las recetas",
+    "loadErrorDescription": "Comprueba tu conexión e inténtalo de nuevo.",
+    "retry": "Intentar de nuevo",
+    "clearSearch": "Borrar búsqueda",
+    "allRightsReserved": "Todos los derechos reservados"
   },
   "AddRecipePage": {
     "pageTitle": "Añadir Nueva Receta",
