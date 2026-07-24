@@ -3,6 +3,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import LocaleSwitcher from '@/components/LocaleSwitcher';
+import AuthNav from '@/components/AuthNav';
 import { loadRecipeById } from '@/lib/recipe-detail';
 
 export const dynamic = 'force-dynamic';
@@ -55,6 +56,7 @@ const RecipeDetailPage = async ({params: paramsPromise}: RecipeDetailPageProps) 
             <ul className="flex gap-4 items-center">
               <li><Link href="/" className="hover:text-orangey-accent transition-colors">{tNav('home')}</Link></li>
               <li><Link href="/add-recipe" className="hover:text-orangey-accent transition-colors">{tNav('addRecipe')}</Link></li>
+              <li><AuthNav /></li>
               <li><LocaleSwitcher /></li>
             </ul>
           </nav>

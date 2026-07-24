@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import dbConnect, { MissingEnvironmentError } from '@/lib/mongodb';
 import { isValidRecipeId, validateRecipePatch } from '@/lib/recipe-validation';
+import { authorizeWrite } from '@/lib/write-auth';
 import RecipeModel from '@/models/Recipe';
 
 type RouteContext = {
@@ -41,6 +42,9 @@ export async function GET(_request: Request, context: RouteContext) {
 }
 
 export async function PATCH(request: Request, context: RouteContext) {
+  const authError = await authorizeWrite(request);
+  if (authError) return authError;
+
   const id = await recipeId(context);
   if (!id) return errorResponse('Invalid recipe id.', 400);
 
@@ -68,7 +72,10 @@ export async function PATCH(request: Request, context: RouteContext) {
   }
 }
 
-export async function DELETE(_request: Request, context: RouteContext) {
+export async function DELETE(request: Request, context: RouteContext) {
+  const authError = await authorizeWrite(request);
+  if (authError) return authError;
+
   const id = await recipeId(context);
   if (!id) return errorResponse('Invalid recipe id.', 400);
 

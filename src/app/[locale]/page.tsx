@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import type { Recipe } from "@/types/recipe";
 import LocaleSwitcher from '@/components/LocaleSwitcher';
+import AuthNav from '@/components/AuthNav';
 
 const DEBOUNCE_DELAY = 300; // milliseconds
 
@@ -169,6 +170,7 @@ export default function Home() {
           <ul className="flex items-center gap-3 sm:gap-5">
             <li><Link href="/" className="hover:text-orangey-accent transition-colors">{tNav('home')}</Link></li>
             <li><Link href="/add-recipe" className="hover:text-orangey-accent transition-colors">{tNav('addRecipe')}</Link></li>
+            <li><AuthNav /></li>
             <li><LocaleSwitcher /></li>
           </ul>
         </nav>

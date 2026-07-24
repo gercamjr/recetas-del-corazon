@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import dbConnect, { MissingEnvironmentError } from '@/lib/mongodb';
 import { validateRecipeInput } from '@/lib/recipe-validation';
-import { authorizeWrite } from '@/lib/write-auth';
+import { requireSessionUser } from '@/lib/session-auth';
 import RecipeModel from '@/models/Recipe';
 
 function databaseErrorResponse(error: unknown, operation: string) {
@@ -31,7 +31,7 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const authError = authorizeWrite(request);
+  const { user, error: authError } = await requireSessionUser();
   if (authError) return authError;
 
   let body: unknown;
@@ -56,8 +56,7 @@ export async function POST(request: Request) {
     await dbConnect();
     const newRecipe = await RecipeModel.create({
       ...validation.data,
-      // TODO: Replace this placeholder with the authenticated user's id.
-      authorId: 'placeholder-user-id',
+      authorId: user.id,
     });
 
     return NextResponse.json({ success: true, data: newRecipe }, { status: 201 });

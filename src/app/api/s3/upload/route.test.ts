@@ -1,5 +1,15 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+const getServerSession = vi.fn();
+
+vi.mock('next-auth', () => ({
+  getServerSession: (...args: unknown[]) => getServerSession(...args),
+}));
+
+vi.mock('@/lib/auth-options', () => ({
+  authOptions: { providers: [] },
+}));
+
 const awsVariables = [
   'AWS_S3_REGION',
   'AWS_ACCESS_KEY_ID',
@@ -7,11 +17,12 @@ const awsVariables = [
   'AWS_S3_BUCKET_NAME',
 ] as const;
 const originalValues = Object.fromEntries(awsVariables.map((name) => [name, process.env[name]]));
-const originalFamilyToken = process.env.FAMILY_ACCESS_TOKEN;
 
 beforeEach(() => {
   for (const name of awsVariables) delete process.env[name];
-  process.env.FAMILY_ACCESS_TOKEN = 'test-family-token';
+  getServerSession.mockResolvedValue({
+    user: { id: 'u1', username: 'tester', role: 'member', name: 'Tester' },
+  });
   vi.resetModules();
 });
 
@@ -21,8 +32,7 @@ afterEach(() => {
     if (value === undefined) delete process.env[name];
     else process.env[name] = value;
   }
-  if (originalFamilyToken === undefined) delete process.env.FAMILY_ACCESS_TOKEN;
-  else process.env.FAMILY_ACCESS_TOKEN = originalFamilyToken;
+  getServerSession.mockReset();
 });
 
 function jsonRequest(body: unknown) {
@@ -30,7 +40,6 @@ function jsonRequest(body: unknown) {
     method: 'POST',
     headers: {
       'content-type': 'application/json',
-      'x-family-token': 'test-family-token',
     },
     body: JSON.stringify(body),
   });
@@ -57,7 +66,6 @@ describe('S3 upload API', () => {
     const { POST } = await import('./route');
     const request = new Request('http://localhost/api/s3/upload', {
       method: 'POST',
-      headers: { 'x-family-token': 'test-family-token' },
       body: '{bad json',
     });
 
